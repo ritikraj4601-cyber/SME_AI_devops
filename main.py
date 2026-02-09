@@ -1,3 +1,4 @@
+from db import get_db
 from fastapi import FastAPI
 from ai_engine import run_ai
 from prompts import (
@@ -122,6 +123,33 @@ def get_history():
     except Exception as e:
         return {
             "error": "DB read failed",
+            "details": str(e)
+        }
+@app.get("/history")
+def history():
+    try:
+        from db import get_db   # force import inside function
+
+        conn, cursor = get_db()
+
+        cursor.execute("""
+            SELECT id, sales, expenses, profit, health_score, risk_level, created_at
+            FROM business_health
+            ORDER BY created_at DESC
+        """)
+
+        rows = cursor.fetchall()
+        conn.close()
+
+        return {
+            "count": len(rows),
+            "rows": rows
+        }
+
+    except Exception as e:
+        return {
+            "error": "HISTORY_FAILED",
+            "type": str(type(e)),
             "details": str(e)
         }
     return structured
