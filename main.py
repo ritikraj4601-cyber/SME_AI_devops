@@ -93,27 +93,35 @@ def business_health(data: BusinessHealthRequest):
             "error": "AI response could not be parsed",
             "raw_output": ai_result
         }
-
 @app.get("/history")
 def get_history():
-    cursor.execute("""
-        SELECT id, sales, expenses, profit, health_score, risk_level, created_at
-        FROM business_health
-        ORDER BY created_at DESC
-        LIMIT 20
-    """)
-    rows = cursor.fetchall()
+    try:
+        conn, cursor = get_db()
 
-    return [
-        {
-            "id": r[0],
-            "sales": r[1],
-            "expenses": r[2],
-            "profit": r[3],
-            "health_score": r[4],
-            "risk_level": r[5],
-            "created_at": r[6]
+        cursor.execute("""
+            SELECT id, sales, expenses, profit, health_score, risk_level, created_at
+            FROM business_health
+            ORDER BY created_at DESC
+            LIMIT 20
+        """)
+        rows = cursor.fetchall()
+        conn.close()
+
+        return [
+            {
+                "id": r[0],
+                "sales": r[1],
+                "expenses": r[2],
+                "profit": r[3],
+                "health_score": r[4],
+                "risk_level": r[5],
+                "created_at": r[6]
+            }
+            for r in rows
+        ]
+    except Exception as e:
+        return {
+            "error": "DB read failed",
+            "details": str(e)
         }
-        for r in rows
-    ]
     return structured
