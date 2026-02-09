@@ -51,3 +51,19 @@ def expense_analysis(data: dict):
     return {
         "ai_insight": ai_result
     }
+    import json
+
+@app.post("/business-health")
+def business_health(data: BusinessHealthRequest):
+    prompt = business_health_prompt(data.dict())
+    ai_result = run_ai(prompt)
+
+    try:
+        structured = json.loads(ai_result)
+    except:
+        structured = {
+            "error": "AI response could not be parsed",
+            "raw_output": ai_result
+        }
+
+    return structured
