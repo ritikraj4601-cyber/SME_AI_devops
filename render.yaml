@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: ai-ops-platform
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py
+    envVars:
+      - key: DATABASE_URL
+        value: postgresql://postgres:[Ris80hi80&4]@db.luejugalpfxlwabtfxwn.supabase.co:5432/postgres
+      - key: SECRET_KEY
+        value: ai-ops-secret-key
+      - key: JWT_SECRET_KEY
+        value: jwt-ai-secret
